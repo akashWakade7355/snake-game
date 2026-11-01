@@ -21,7 +21,6 @@
 
 html, body {
   margin: 0;
-  height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--bg-page);
   color: var(--text);
@@ -32,11 +31,12 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  min-width: 0;
   padding: 30px;
 }
 
 .page-shell {
-  width: min(1020px, 96vw);
+  width: min(1020px, 100%);
 }
 
 .game-panel {
@@ -216,6 +216,7 @@ input[type='range'] {
 canvas {
   display: block;
   width: 100%;
+  max-width: 100%;
   height: auto;
   background: rgba(12, 14, 15, 0.96);
 }
