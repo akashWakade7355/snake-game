@@ -21,7 +21,7 @@ const Controls = (() => {
     all.skinSelect.addEventListener('change', handlers.changeSkin);
     all.speedSlider.addEventListener('input', handlers.changeSpeed);
     all.muteBtn.addEventListener('click', handlers.toggleMute);
-    all.playBtn.addEventListener('click', handlers.startGame);
+    all.playBtn.addEventListener('click', () => handlers.startGame());
     all.playAgainBtn.addEventListener('click', handlers.restart);
 
     document.addEventListener('keydown', handlers.handleKeyboard);
