@@ -19,7 +19,7 @@
 
 A neon retro Snake Game built with HTML5 Canvas, CSS, and vanilla JavaScript. Chase your high score with responsive keyboard and touch controls, customizable snake skins, adjustable speed, sound effects, and saved preferences.
 
-**Play the deployed game:** [akashwakade7355.github.io/snake-game](https://akashwakade7355.github.io/snake-game/)
+**Play the latest deployed version:** [Snake Game on GitHub Pages](https://akashwakade7355.github.io/snake-game/)
 
 ## Features
 

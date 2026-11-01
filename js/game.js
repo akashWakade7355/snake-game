@@ -110,17 +110,15 @@ const generateFood = () => {
   state.food = candidate;
 };
 
-const resetSnake = () => {
-  const startX = Math.floor(cols / 2);
+const resetSnake = (direction = { x: 1, y: 0 }) => {
+  const startX = Math.floor(cols / 4);
   const startY = Math.floor(rows / 2);
-  state.snake = [
-    { x: startX, y: startY },
-    { x: startX - 1, y: startY },
-    { x: startX - 2, y: startY },
-    { x: startX - 3, y: startY },
-  ];
-  state.direction = { x: 1, y: 0 };
-  state.nextDirection = { x: 1, y: 0 };
+  state.snake = Array.from({ length: 4 }, (_, index) => ({
+    x: startX - direction.x * index,
+    y: startY - direction.y * index,
+  }));
+  state.direction = { x: direction.x, y: direction.y };
+  state.nextDirection = { x: direction.x, y: direction.y };
 };
 
 const savePersistedState = () => {
@@ -256,11 +254,7 @@ const startGame = (initialDirection = null) => {
   state.started = true;
   state.paused = false;
   state.gameOver = false;
-  resetSnake();
-  if (initialDirection) {
-    state.direction = initialDirection;
-    state.nextDirection = initialDirection;
-  }
+  resetSnake(initialDirection || undefined);
   resetScore();
   generateFood();
   updateDifficulty();
@@ -359,12 +353,7 @@ Controls.bind({
   toggleMute,
   startGame,
   handleKeyboard,
-  handleDirection: (direction) => {
-    if (!state.started) {
-      startGame();
-    }
-    setDirectionFromTouch(direction);
-  },
+  handleDirection: setDirectionFromTouch,
 });
 
 const initialize = () => {
