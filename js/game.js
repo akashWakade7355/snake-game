@@ -16,7 +16,7 @@ const state = {
   speed: Storage.getSpeed(),
   muted: Storage.getMuted(),
   skin: Storage.getSkin(),
-  started: true,
+  started: false,
   paused: false,
   gameOver: false,
   intervalId: null,
@@ -29,16 +29,6 @@ const ctx = board.getContext('2d');
 const rows = 19;
 const cols = 32;
 const cellSize = Math.min(board.width / cols, board.height / rows);
-
-const updateSpeedTiming = () => {
-  const speedValue = Number(state.speed);
-  const adjusted = Math.max(70, 180 - speedValue * 12);
-  state.tickMs = adjusted;
-  if (state.started && !state.gameOver) {
-    clearInterval(state.intervalId);
-    state.intervalId = setInterval(stepGame, state.tickMs);
-  }
-};
 
 const setScoreDisplay = () => {
   Controls.all.scoreValue.textContent = state.score;
@@ -121,7 +111,7 @@ const generateFood = () => {
 };
 
 const resetSnake = () => {
-  const startX = 6;
+  const startX = Math.floor(cols / 2);
   const startY = Math.floor(rows / 2);
   state.snake = [
     { x: startX, y: startY },
@@ -155,10 +145,12 @@ const finishGame = () => {
 
 const updateDifficulty = () => {
   const speedValue = Number(state.speed);
-  const target = Math.max(70, 180 - speedValue * 12 - Math.floor((state.score - 100) / 20) * 4);
+  const target = Math.max(100, 240 - speedValue * 12 - Math.floor((state.score - 100) / 20) * 4);
   state.tickMs = target;
   clearInterval(state.intervalId);
-  state.intervalId = setInterval(stepGame, state.tickMs);
+  state.intervalId = state.started && !state.paused && !state.gameOver
+    ? setInterval(stepGame, state.tickMs)
+    : null;
 };
 
 const stepGame = () => {
@@ -176,7 +168,12 @@ const stepGame = () => {
   };
 
   const hitWall = head.x < 0 || head.y < 0 || head.x >= cols || head.y >= rows;
-  const hitSelf = state.snake.some((segment) => segment.x === head.x && segment.y === head.y);
+  const ateFood = head.x === state.food.x && head.y === state.food.y;
+  const hitSelf = state.snake.some((segment, index) => (
+    segment.x === head.x
+    && segment.y === head.y
+    && (ateFood || index < state.snake.length - 1)
+  ));
 
   if (hitWall || hitSelf) {
     finishGame();
@@ -185,7 +182,6 @@ const stepGame = () => {
 
   state.snake.unshift(head);
 
-  const ateFood = head.x === state.food.x && head.y === state.food.y;
   if (ateFood) {
     state.score += 10;
     Storage.setScore(state.score);
@@ -200,6 +196,7 @@ const stepGame = () => {
   } else {
     state.snake.pop();
   }
+  drawBoard();
 };
 
 const drawBoard = () => {
@@ -254,16 +251,20 @@ const drawBoard = () => {
   });
 };
 
-const startGame = () => {
+const startGame = (initialDirection = null) => {
   unlockAudio();
   state.started = true;
   state.paused = false;
   state.gameOver = false;
-  setOverlayState();
   resetSnake();
+  if (initialDirection) {
+    state.direction = initialDirection;
+    state.nextDirection = initialDirection;
+  }
   resetScore();
   generateFood();
   updateDifficulty();
+  setOverlayState();
   drawBoard();
 };
 
@@ -288,11 +289,7 @@ const changeSpeed = (event) => {
   state.speed = Number(event.target.value);
   Storage.setSpeed(state.speed);
   Controls.all.speedValue.textContent = state.speed;
-  state.tickMs = Math.max(70, 180 - state.speed * 12);
-  if (state.started && !state.gameOver && !state.paused) {
-    clearInterval(state.intervalId);
-    state.intervalId = setInterval(stepGame, state.tickMs);
-  }
+  updateDifficulty();
 };
 
 const toggleMute = () => {
@@ -317,6 +314,10 @@ const handleKeyboard = (event) => {
   if (Object.prototype.hasOwnProperty.call(moveMap, key)) {
     event.preventDefault();
     const direction = moveMap[key];
+    if (!state.started) {
+      startGame(direction);
+      return;
+    }
     const reverse = direction.x === -state.direction.x && direction.y === -state.direction.y;
     if (!reverse) {
       state.nextDirection = direction;
@@ -339,6 +340,10 @@ const setDirectionFromTouch = (direction) => {
 
   const next = map[direction];
   if (!next) return;
+  if (!state.started) {
+    startGame(next);
+    return;
+  }
   const reverse = next.x === -state.direction.x && next.y === -state.direction.y;
   if (!reverse) {
     state.nextDirection = next;
@@ -347,15 +352,7 @@ const setDirectionFromTouch = (direction) => {
 
 Controls.bind({
   restart: () => {
-    state.started = true;
-    state.paused = false;
-    state.gameOver = false;
-    setOverlayState();
-    resetSnake();
-    resetScore();
-    generateFood();
-    updateDifficulty();
-    drawBoard();
+    startGame();
   },
   changeSkin,
   changeSpeed,
@@ -379,7 +376,7 @@ const initialize = () => {
   resetSnake();
   generateFood();
   setOverlayState();
-  updateSpeedTiming();
+  updateDifficulty();
   drawBoard();
   if (state.muted) {
     Controls.all.muteBtn.textContent = '🔇';
