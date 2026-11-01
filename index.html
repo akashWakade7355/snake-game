@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="game-panel">
+        <header class="topbar">
+          <h1>Snake Game</h1>
+          <div class="score-box" aria-live="polite">
+            <span>Score:</span>
+            <span id="scoreValue">100</span>
+          </div>
+        </header>
+
+        <div class="controls-row">
+          <button id="restartBtn" class="primary-btn" type="button">RESTART</button>
+
+          <label class="select-wrap" for="skinSelect">
+            <span>Skin:</span>
+            <select id="skinSelect" aria-label="Choose snake skin">
+              <option value="default">Default</option>
+              <option value="blue">Blue</option>
+              <option value="red">Red</option>
+              <option value="purple">Purple</option>
+              <option value="golden">Golden</option>
+            </select>
+          </label>
+
+          <div class="speed-wrap" aria-label="Set snake speed">
+            <label for="speedSlider">Speed:</label>
+            <input id="speedSlider" type="range" min="1" max="10" value="5" />
+            <span id="speedValue">5</span>
+          </div>
+
+          <button id="muteBtn" class="mute-btn" type="button" aria-label="Toggle sound">🔊</button>
+        </div>
+
+        <div class="board-shell">
+          <canvas id="gameCanvas" width="760" height="440" aria-label="Snake game board"></canvas>
+
+          <div id="startOverlay" class="overlay visible" aria-live="polite">
+            <button id="playBtn" type="button">Play</button>
+          </div>
+
+          <div id="pauseOverlay" class="overlay hidden" aria-live="polite">
+            <span>Paused</span>
+          </div>
+
+          <div id="gameOverOverlay" class="overlay hidden" aria-live="polite">
+            <div class="overlay-title">Game Over</div>
+            <div id="finalScore">Final Score: 100</div>
+            <button id="playAgainBtn" type="button">Play Again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="touch-controls" aria-label="Touch controls">
+      <button class="touch-btn" data-dir="up" type="button">↑</button>
+      <div class="touch-middle">
+        <button class="touch-btn" data-dir="left" type="button">←</button>
+        <button class="touch-btn" data-dir="down" type="button">↓</button>
+        <button class="touch-btn" data-dir="right" type="button">→</button>
+      </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+</html>
