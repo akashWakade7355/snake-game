@@ -287,6 +287,7 @@ canvas {
 
 @media (max-width: 760px) {
   body {
+    flex-direction: column;
     padding: 14px;
   }
 
@@ -322,5 +323,11 @@ canvas {
   .touch-controls {
     display: flex;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 500px) {
+  .controls-row {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
